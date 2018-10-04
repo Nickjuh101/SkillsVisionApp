@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">SkillsVisionApp</string>
+    <string name="title_activity_basic">basic</string>
 </resources>
