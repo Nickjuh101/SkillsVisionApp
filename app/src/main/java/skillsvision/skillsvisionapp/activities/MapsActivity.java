@@ -52,12 +52,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final String TAG = "Log";
     private CameraPosition mCameraPosition;
 
-    private String addressStr = "";
-
-    private Button callRSRButton, callNowButton;
-    private android.support.v7.app.AlertDialog dialog;
-    private TextView cancelCallButton, payCostsDescription, payCostsTitle;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -112,29 +106,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         getDeviceLocation();
     }
 
-    public void callPhoneNumber()
-    {
-        try
-        {
-            if(Build.VERSION.SDK_INT > 22)
-            {
-                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-                    // TODO: Consider calling
 
-                    ActivityCompat.requestPermissions(MapsActivity.this, new String[]{Manifest.permission.CALL_PHONE}, 101);
-
-                    return;
-                }
-            }
-            else {
-                // TODO: Fallback procedure
-            }
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
-    }
 
     private void initMap(){
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -143,22 +115,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                                           int[] grantResults)
-    {
-        if(requestCode == 101)
-        {
-            if(grantResults[0] == PackageManager.PERMISSION_GRANTED)
-            {
-                callPhoneNumber();
-            }
-            else
-            {
-                Log.e(TAG, "Permission not Granted");
-            }
-        }
-    }
+
 
     private void updateLocationUI() {
         if (mMap == null) {
@@ -204,7 +161,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 try {
                                     List<Address> myList = currentLoc.getFromLocation(location.latitude, location.longitude, 1);
                                     Address address = myList.get(0);
-                                    addressStr += address.getAddressLine(0);
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
@@ -261,4 +217,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Log.e("Exception: %s", e.getMessage());
         }
     }
+
+
+
 }
