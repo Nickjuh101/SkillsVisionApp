@@ -3,4 +3,13 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+    <color name="white">#FFFFFF</color>
+
+    <color name="skillsvision_blue">#0285C7</color>
+    <color name="skillsvision_red">#DF0926</color>
+    <color name="skillsvision_green">#069F3C</color>
+    <color name="skillsvision_yellow">#F4C300</color>
+
+    <color name="fields">#949494</color>
+
 </resources>

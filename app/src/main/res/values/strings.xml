@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">SkillsVisionApp</string>
     <string name="title_activity_basic">basic</string>
+    <string name="skillsvision_logo">SkillsVision_logo</string>
+    <string name="register">Register</string>
+    <string name="login">Login</string>
 </resources>
