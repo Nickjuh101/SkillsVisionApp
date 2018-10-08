@@ -32,6 +32,7 @@ public class StartActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent registerActivityIntent = new Intent(StartActivity.this, RegisterAccountActivity.class);
                 startActivity(registerActivityIntent);
+                finish();
             }
         });
         mHolder.mGoToLoginActivityButton.setOnClickListener(new View.OnClickListener() {
@@ -39,6 +40,7 @@ public class StartActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent loginActivityIntent = new Intent(StartActivity.this, LoginActivity.class);
                 startActivity(loginActivityIntent);
+                finish();
             }
         });
 
