@@ -12,6 +12,13 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -19,6 +26,7 @@ import java.util.Date;
 import java.util.regex.Pattern;
 
 import skillsvision.skillsvisionapp.R;
+import skillsvision.skillsvisionapp.network.RegisterRequest;
 
 public class RegisterAccountActivity extends AppCompatActivity {
 
@@ -87,11 +95,36 @@ public class RegisterAccountActivity extends AppCompatActivity {
                         birthdate = mHolder.mBirthdateEditText.getText().toString();
                         try {
                             dateObject = formatter.parse(birthdate);
-                            Toast.makeText(RegisterAccountActivity.this, dateObject.toString(), Toast.LENGTH_LONG).show();
                         } catch (ParseException e) {
                             e.printStackTrace();
                         }
                         location = mHolder.mLocationEditText.getText().toString().trim();
+
+                        Response.Listener responseListener = new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String response) {
+                                try{
+                                    JSONObject jsonResponse = new JSONObject(response);
+                                    boolean success = jsonResponse.getBoolean("success");
+                                    if (success){
+                                        Toast.makeText(RegisterAccountActivity.this, "Registration succesful!", Toast.LENGTH_LONG).show();
+                                        Intent directToLoginPageIntent = new Intent(RegisterAccountActivity.this, LoginActivity.class);
+                                        RegisterAccountActivity.this.startActivity(directToLoginPageIntent);
+                                    } else {
+                                        AlertDialog.Builder builder = new AlertDialog.Builder(RegisterAccountActivity.this);
+                                        builder.setMessage("Register Failed")
+                                                .setNegativeButton("Retry", null)
+                                                .create()
+                                                .show();
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        };
+                        RegisterRequest registerRequest = new RegisterRequest(emailadress, password, dateObject, location, responseListener);
+                        RequestQueue queue = Volley.newRequestQueue(RegisterAccountActivity.this);
+                        queue.add(registerRequest);
                     }
                 }
             }
