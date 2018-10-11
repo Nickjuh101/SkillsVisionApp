@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -12,10 +13,15 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -23,10 +29,12 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import skillsvision.skillsvisionapp.R;
-import skillsvision.skillsvisionapp.network.RegisterRequest;
+import skillsvision.skillsvisionapp.network.MySingleton;
 
 public class RegisterAccountActivity extends AppCompatActivity {
 
@@ -36,6 +44,8 @@ public class RegisterAccountActivity extends AppCompatActivity {
             Pattern.compile("[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", Pattern.CASE_INSENSITIVE);
     public static final Pattern VALID_DATE_REGEX =
             Pattern.compile("^\\d{2}-\\d{2}-\\d{4}$");
+
+    String reg_url = "http://192.168.8.107:80/skillsvision/register_user.php";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,31 +110,35 @@ public class RegisterAccountActivity extends AppCompatActivity {
                         }
                         location = mHolder.mLocationEditText.getText().toString().trim();
 
-                        Response.Listener responseListener = new Response.Listener<String>() {
+                        StringRequest stringRequest = new StringRequest(Request.Method.POST, reg_url, new Response.Listener<String>() {
                             @Override
                             public void onResponse(String response) {
-                                try{
-                                    JSONObject jsonResponse = new JSONObject(response);
-                                    boolean success = jsonResponse.getBoolean("success");
-                                    if (success){
-                                        Toast.makeText(RegisterAccountActivity.this, "Registration succesful!", Toast.LENGTH_LONG).show();
-                                        Intent directToLoginPageIntent = new Intent(RegisterAccountActivity.this, LoginActivity.class);
-                                        RegisterAccountActivity.this.startActivity(directToLoginPageIntent);
-                                    } else {
-                                        AlertDialog.Builder builder = new AlertDialog.Builder(RegisterAccountActivity.this);
-                                        builder.setMessage("Register Failed")
-                                                .setNegativeButton("Retry", null)
-                                                .create()
-                                                .show();
-                                    }
+                                try {
+                                    JSONArray jsonArray = new JSONArray(response);
+                                    JSONObject jsonObject = jsonArray.getJSONObject(0);
+                                    String code = jsonObject.getString("code");
+                                    String message = jsonObject.getString("message");
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
                             }
+                        }, new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                Log.e("ERROR", "Error occurred ", error);
+                            }
+                        }){
+                            @Override
+                            protected Map<String, String> getParams() throws AuthFailureError {
+                                Map<String,String> params = new HashMap<String, String>();
+                                params.put("emailadress", emailadress);
+                                params.put("password", password);
+                                params.put("birthdate", birthdate);
+                                params.put("country", location);
+                                return params;
+                            }
                         };
-                        RegisterRequest registerRequest = new RegisterRequest(emailadress, password, dateObject, location, responseListener);
-                        RequestQueue queue = Volley.newRequestQueue(RegisterAccountActivity.this);
-                        queue.add(registerRequest);
+                        MySingleton.getInstance(RegisterAccountActivity.this).addToRequestqueue(stringRequest);
                     }
                 }
             }
