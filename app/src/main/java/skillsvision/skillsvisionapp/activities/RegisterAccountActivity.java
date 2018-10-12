@@ -74,14 +74,19 @@ public class RegisterAccountActivity extends AppCompatActivity {
                     final String password;
                     final String birthdate;
                     final String location;
+                    final String username;
 
                     if (!VALID_EMAIL_ADDRESS_REGEX.matcher(emailadress).matches()){
                         mHolder.mEmailEditText.requestFocus();
                         mHolder.mEmailEditText.setError("The provided emailadress is invalid");
                         return;
+                    } else if(mHolder.mUsernameEditText.getText().toString().length() <= 3){
+                        mHolder.mUsernameEditText.requestFocus();
+                        mHolder.mUsernameEditText.setError("A username should be atleast 4 characters long.");
+                        return;
                     } else if(mHolder.mPasswordEditText.getText().toString().length() <= 4){
                         mHolder.mPasswordEditText.requestFocus();
-                        mHolder.mPasswordEditText.setError("A password should be atleast 4 characters long. \n" +
+                        mHolder.mPasswordEditText.setError("A password should be atleast 5 characters long. \n" +
                                                            "A strong password has the following:\n" +
                                                            " - Atleast 1 lowercase letter\n" +
                                                            " - Atleast 1 uppercase letter\n" +
@@ -98,6 +103,7 @@ public class RegisterAccountActivity extends AppCompatActivity {
                         mHolder.mBirthdateEditText.setError("Field is empty or birthdate should be written as DD-MM-YYYY");
                         return;
                     } else {
+                        username = mHolder.mUsernameEditText.getText().toString().trim();
                         password = mHolder.mPasswordEditText.getText().toString().trim();
                         /* Parse Date into correct format for database */
                         DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
@@ -118,6 +124,7 @@ public class RegisterAccountActivity extends AppCompatActivity {
                                     JSONObject jsonObject = jsonArray.getJSONObject(0);
                                     String code = jsonObject.getString("code");
                                     String message = jsonObject.getString("message");
+                                    Toast.makeText(RegisterAccountActivity.this, "Er zit een fout in je PHP vriend", Toast.LENGTH_LONG).show();
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
@@ -125,6 +132,7 @@ public class RegisterAccountActivity extends AppCompatActivity {
                         }, new Response.ErrorListener() {
                             @Override
                             public void onErrorResponse(VolleyError error) {
+                                Toast.makeText(RegisterAccountActivity.this, "It was at this moment, Nick knew, He fucked up", Toast.LENGTH_LONG).show();
                                 Log.e("ERROR", "Error occurred ", error);
                             }
                         }){
@@ -132,6 +140,7 @@ public class RegisterAccountActivity extends AppCompatActivity {
                             protected Map<String, String> getParams() throws AuthFailureError {
                                 Map<String,String> params = new HashMap<String, String>();
                                 params.put("emailadress", emailadress);
+                                params.put("username", username);
                                 params.put("password", password);
                                 params.put("birthdate", birthdate);
                                 params.put("country", location);
@@ -147,11 +156,13 @@ public class RegisterAccountActivity extends AppCompatActivity {
 
     private Boolean checkEmptyFields(){
         if (mHolder.mEmailEditText.getText().toString().isEmpty() &&
+                mHolder.mUsernameEditText.getText().toString().isEmpty() &&
                 mHolder.mPasswordEditText.getText().toString().isEmpty() &&
                 mHolder.mConfirmPasswordEditText.getText().toString().isEmpty()&&
                 mHolder.mBirthdateEditText.getText().toString().isEmpty() &&
                 mHolder.mLocationEditText.getText().toString().isEmpty()){
             mHolder.mEmailEditText.setError("Field is empty");
+            mHolder.mUsernameEditText.setError("Field is empty");
             mHolder.mPasswordEditText.setError("Field is empty");
             mHolder.mConfirmPasswordEditText.setError("Field is empty");
             mHolder.mBirthdateEditText.setError("Field is empty");
@@ -159,10 +170,23 @@ public class RegisterAccountActivity extends AppCompatActivity {
             Toast.makeText(RegisterAccountActivity.this, "All fields are empty", Toast.LENGTH_LONG).show();
             mHolder.mEmailEditText.requestFocus();
             return false;
-        }else if (mHolder.mPasswordEditText.getText().toString().isEmpty() &&
+        }else if (mHolder.mUsernameEditText.getText().toString().isEmpty() &&
+                mHolder.mPasswordEditText.getText().toString().isEmpty() &&
                 mHolder.mConfirmPasswordEditText.getText().toString().isEmpty()&&
                 mHolder.mBirthdateEditText.getText().toString().isEmpty() &&
                 mHolder.mLocationEditText.getText().toString().isEmpty()){
+            mHolder.mUsernameEditText.setError("Field is empty");
+            mHolder.mPasswordEditText.setError("Field is empty");
+            mHolder.mConfirmPasswordEditText.setError("Field is empty");
+            mHolder.mBirthdateEditText.setError("Field is empty");
+            mHolder.mLocationEditText.setError("Field is empty");
+            Toast.makeText(RegisterAccountActivity.this, "All fields are empty", Toast.LENGTH_LONG).show();
+            mHolder.mUsernameEditText.requestFocus();
+            return false;
+        }else if (mHolder.mPasswordEditText.getText().toString().isEmpty() &&
+            mHolder.mConfirmPasswordEditText.getText().toString().isEmpty()&&
+            mHolder.mBirthdateEditText.getText().toString().isEmpty() &&
+            mHolder.mLocationEditText.getText().toString().isEmpty()){
             mHolder.mEmailEditText.setError(null);
             mHolder.mPasswordEditText.setError("Field is empty");
             mHolder.mConfirmPasswordEditText.setError("Field is empty");
@@ -202,6 +226,7 @@ public class RegisterAccountActivity extends AppCompatActivity {
             return false;
         } else {
             mHolder.mEmailEditText.setError(null);
+            mHolder.mUsernameEditText.setError(null);
             mHolder.mPasswordEditText.setError(null);
             mHolder.mConfirmPasswordEditText.setError(null);
             mHolder.mBirthdateEditText.setError(null);
@@ -217,6 +242,7 @@ public class RegisterAccountActivity extends AppCompatActivity {
 
         /* Fields */
         mHolder.mEmailEditText = (EditText)findViewById(R.id.activity_register_email_field);
+        mHolder.mUsernameEditText = (EditText)findViewById(R.id.activity_register_username_field);
         mHolder.mPasswordEditText = (EditText)findViewById(R.id.activity_register_password_field);
         mHolder.mConfirmPasswordEditText = (EditText)findViewById(R.id.activity_register_confirm_password_field);
         mHolder.mBirthdateEditText = (EditText)findViewById(R.id.activity_register_birthdate_field);
@@ -232,6 +258,6 @@ public class RegisterAccountActivity extends AppCompatActivity {
         Toolbar mToolbar;
         ImageView mBackButton;
         Button mRegisterAccountButton;
-        EditText mEmailEditText, mPasswordEditText, mConfirmPasswordEditText, mBirthdateEditText, mLocationEditText;
+        EditText mEmailEditText, mUsernameEditText, mPasswordEditText, mConfirmPasswordEditText, mBirthdateEditText, mLocationEditText;
     }
 }

@@ -11,6 +11,7 @@
     <!-- String values for register account activity -->
         <!-- Place holders for fields -->
     <string name="placeholder_email"><i>E-mail</i></string>
+    <string name="placeholder_username"><i>Username</i></string>
     <string name="placeholder_password"><i>Password</i></string>
     <string name="placeholder_confirm_password"><i>Confirm Password</i></string>
     <string name="placeholder_birthdate"><i>Birthdate (DD-MM-YYYY)</i></string>
